@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useStore } from '../store/useStore'
 import { convertPrompt } from '../lib/convert'
 import { saveConversation } from '../lib/history'
@@ -56,6 +57,32 @@ export function InputPanel() {
     }
   }
 
+  // Keep a live ref so the global shortcut always calls the latest closure.
+  const convertRef = useRef(handleConvert)
+  convertRef.current = handleConvert
+
+  // Desktop keyboard shortcuts: Cmd/Ctrl+Enter converts; 1/2/3 pick a variant.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault()
+        void convertRef.current()
+        return
+      }
+      const tag = (e.target as HTMLElement | null)?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      if (e.key === '1' || e.key === '2' || e.key === '3') {
+        const idx = Number(e.key) - 1
+        const s = useStore.getState()
+        if (s.outputs[idx]?.status === 'done') {
+          s.setSelectedIndex(s.selectedIndex === idx ? null : idx)
+        }
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   return (
     <section className="flex flex-col gap-4">
       <TemplateBar />
@@ -108,6 +135,7 @@ export function InputPanel() {
         <button
           onClick={handleConvert}
           disabled={!canConvert}
+          title="Convert  (Ctrl / ⌘ + Enter)"
           className="w-full md:w-auto px-6 py-3 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
         >
           {store.loading && (
