@@ -20,7 +20,7 @@ export function RateLimitCountdown() {
 
   if (!rateLimitUntil) return null
   return (
-    <div className="text-center text-amber-400 text-sm py-2">
+    <div className="text-center text-amber-500 text-sm py-2">
       Rate limited — retry in {secs}s
     </div>
   )

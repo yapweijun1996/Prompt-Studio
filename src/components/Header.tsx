@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
 import { SettingsModal } from './SettingsModal'
+import { ThemeToggle } from './ThemeToggle'
 
 export function Header() {
   const provider = useStore((s) => s.provider)
@@ -8,19 +9,20 @@ export function Header() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+      <header className="flex items-center justify-between px-6 py-4 border-b border-line">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[oklch(0.55_0.22_260)] flex items-center justify-center text-white text-xs font-bold">P</div>
-          <span className="font-semibold text-white tracking-tight">Prompt Studio</span>
+          <div className="w-7 h-7 rounded-lg bg-brand flex items-center justify-center text-white text-xs font-bold">P</div>
+          <span className="font-semibold text-fg tracking-tight">Prompt Studio</span>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400">
+          <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-surface-hi text-fg-dim">
             {provider === 'default' ? 'Demo key (built-in)' : provider.toUpperCase()}
           </span>
+          <ThemeToggle />
           <button
             onClick={() => setShowSettings(true)}
-            className="text-slate-400 hover:text-white transition-colors"
+            className="text-fg-dim hover:text-fg transition-colors"
             aria-label="Settings"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

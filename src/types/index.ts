@@ -4,6 +4,8 @@ export type EffortLevel = 'low' | 'medium' | 'high' | 'xhigh'
 
 export type GenerationMode = 'creative' | 'balanced' | 'strict'
 
+export type Theme = 'light' | 'dark'
+
 export interface OutputCard {
   id: number
   label: string

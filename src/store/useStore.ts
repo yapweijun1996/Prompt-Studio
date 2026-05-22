@@ -1,6 +1,19 @@
 import { create } from 'zustand'
 import { loadApiKey, saveApiKey } from '../lib/xor'
-import type { OutputCard, Provider, EffortLevel, GenerationMode } from '../types'
+import type { OutputCard, Provider, EffortLevel, GenerationMode, Theme } from '../types'
+
+const THEME_KEY = 'ps_theme'
+
+function getInitialTheme(): Theme {
+  const saved = localStorage.getItem(THEME_KEY)
+  if (saved === 'light' || saved === 'dark') return saved
+  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+function applyTheme(theme: Theme): void {
+  document.documentElement.classList.toggle('dark', theme === 'dark')
+  localStorage.setItem(THEME_KEY, theme)
+}
 
 interface StoreState {
   input: string
@@ -15,6 +28,7 @@ interface StoreState {
   outputs: OutputCard[]
   selectedIndex: number | null
   rateLimitUntil: number | null
+  theme: Theme
 
   setInput: (v: string) => void
   setPromptType: (v: string) => void
@@ -29,6 +43,7 @@ interface StoreState {
   resetOutputs: () => void
   setSelectedIndex: (i: number | null) => void
   setRateLimitUntil: (ts: number | null) => void
+  toggleTheme: () => void
 }
 
 const SETTINGS_KEY = 'ps_settings'
@@ -62,6 +77,7 @@ export const useStore = create<StoreState>((set, get) => ({
   outputs: [],
   selectedIndex: null,
   rateLimitUntil: null,
+  theme: getInitialTheme(),
 
   setInput: (v) => set({ input: v }),
   setPromptType: (v) => { set({ promptType: v }); persistSettings({ ...get(), promptType: v }) },
@@ -83,4 +99,9 @@ export const useStore = create<StoreState>((set, get) => ({
   resetOutputs: () => set({ outputs: [], selectedIndex: null }),
   setSelectedIndex: (i) => set({ selectedIndex: i }),
   setRateLimitUntil: (ts) => set({ rateLimitUntil: ts }),
+  toggleTheme: () => {
+    const next: Theme = get().theme === 'dark' ? 'light' : 'dark'
+    applyTheme(next)
+    set({ theme: next })
+  },
 }))

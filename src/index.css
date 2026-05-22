@@ -1,17 +1,62 @@
 @import "tailwindcss";
 
-@theme {
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Semantic tokens — utilities reference the var, value switches per theme. */
+@theme inline {
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-surface-hi: var(--c-surface-hi);
+  --color-surface-hover: var(--c-surface-hover);
+  --color-line: var(--c-line);
+  --color-line-hi: var(--c-line-hi);
+  --color-fg: var(--c-fg);
+  --color-fg-muted: var(--c-fg-muted);
+  --color-fg-dim: var(--c-fg-dim);
+  --color-fg-faint: var(--c-fg-faint);
+  --color-danger: var(--c-danger);
   --color-brand: oklch(0.55 0.22 260);
-  --color-brand-dim: oklch(0.45 0.18 260);
+  --color-brand-hover: oklch(0.45 0.18 260);
+  --color-brand-tint: var(--c-brand-tint);
   --font-sans: 'DM Sans', system-ui, sans-serif;
 }
 
+/* Light theme (default) */
 :root {
+  color-scheme: light;
+  --c-canvas: #f8fafc;
+  --c-surface: #ffffff;
+  --c-surface-hi: #f1f5f9;
+  --c-surface-hover: #e2e8f0;
+  --c-line: #e2e8f0;
+  --c-line-hi: #cbd5e1;
+  --c-fg: #0f172a;
+  --c-fg-muted: #334155;
+  --c-fg-dim: #64748b;
+  --c-fg-faint: #94a3b8;
+  --c-danger: #dc2626;
+  --c-brand-tint: oklch(0.55 0.22 260 / 0.12);
+}
+
+/* Dark theme */
+.dark {
   color-scheme: dark;
+  --c-canvas: #020617;
+  --c-surface: #0f172a;
+  --c-surface-hi: #1e293b;
+  --c-surface-hover: #334155;
+  --c-line: #334155;
+  --c-line-hi: #475569;
+  --c-fg: #f1f5f9;
+  --c-fg-muted: #cbd5e1;
+  --c-fg-dim: #94a3b8;
+  --c-fg-faint: #64748b;
+  --c-danger: #f87171;
+  --c-brand-tint: oklch(0.55 0.22 260 / 0.15);
 }
 
 body {
-  @apply bg-slate-950 text-slate-100 font-sans antialiased;
+  @apply bg-canvas text-fg font-sans antialiased;
 }
 
 * {
