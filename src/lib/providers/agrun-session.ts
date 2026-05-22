@@ -28,6 +28,17 @@ function getRuntime(): Runtime {
  */
 export async function runAgrun(input: RunInput): Promise<string> {
   const result = await getRuntime().run(input, {
+    // Prompt Studio is a single-shot rewriter, not an agent task. Our system
+    // prompt tells the model to output ONLY the rewritten prompt (no JSON) —
+    // correct for the answer, but it makes agrun's PLANNER call return plain
+    // text instead of a JSON envelope. That plain text already IS the finished
+    // rewrite, so coerce it straight into a `final` decision. This fires before
+    // the repair cascade, skipping ~5 wasted LLM calls and the approval-
+    // required fallback that was surfacing as an error.
+    onInvalidPlannerOutput: (rawText) => {
+      const text = typeof rawText === 'string' ? rawText.trim() : ''
+      return text ? { type: 'final', answer: text, reasoning: 'one-shot prompt rewrite' } : null
+    },
     onStep: (step) => {
       if (
         step.type === 'provider-error' ||

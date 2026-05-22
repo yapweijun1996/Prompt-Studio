@@ -46,9 +46,24 @@ declare module 'agent-runtime-javascript-dist/agrun.js' {
     timestamp?: string
   }
 
+  // A planner "final" decision — the planner directly returns the answer,
+  // bypassing the finalizer. See agrun planner-architecture.md.
+  export interface PlannerFinalDecision {
+    type: 'final'
+    answer: string
+    reasoning?: string
+  }
+
   export interface RunOptions {
     onStep?: (step: RunStep) => void
     onToken?: (delta: string) => void
+    // Invoked when the planner response fails envelope parsing, before the
+    // repair cascade. Returning a decision skips repair entirely.
+    onInvalidPlannerOutput?: (
+      rawText: string,
+      parseError: Error | null,
+      runState: unknown,
+    ) => PlannerFinalDecision | null | undefined | Promise<PlannerFinalDecision | null | undefined>
     abortSignal?: AbortSignal
   }
 
