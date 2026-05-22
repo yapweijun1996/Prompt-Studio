@@ -12,9 +12,13 @@ A fast, local-first web app that converts one prompt into **up to 3 selectable A
 - **Multiple providers** — Default demo gateway, OpenAI, Gemini, or any OpenAI-compatible endpoint
 - **Reasoning control** — Quick / Balanced / Thorough / Deep, mapped to each provider's effort/thinking API
 - **Generation modes** — Creative / Balanced / Strict
+- **Generation history** — every run auto-saved locally; browse, search, pin, restore
+- **Templates** — save and reapply named presets of your settings
+- **Share** — copy a local-first link that rehydrates the whole run (no server)
+- **Keyboard shortcuts** — ⌘/Ctrl+Enter to convert, 1/2/3 to pick a variant
 - **Light & dark theme** — system-aware, with a manual toggle
-- **PWA** — installable, offline app shell, auto-update
-- **Local-first** — settings in localStorage (API keys XOR-obfuscated), templates in IndexedDB
+- **PWA** — installable (custom Install button), offline app shell, auto-update
+- **Local-first** — settings in localStorage (API keys XOR-obfuscated), history & templates in IndexedDB
 - **Built-in demo key** — works out of the box, no signup (rate-limited)
 
 ## Tech Stack
@@ -37,6 +41,7 @@ npm install
 npm run dev      # dev server
 npm run build    # type-check + production build
 npm run preview  # preview the build
+npm test         # run the Vitest unit suite
 ```
 
 > Requires Node 18+. `npm install` pulls agrun.js directly from GitHub (not on the npm registry).
@@ -66,16 +71,22 @@ Push to `main` → GitHub Actions builds and deploys to GitHub Pages. The workfl
 
 ```
 src/
-  components/        UI components (Header, InputPanel, OutputCard, …)
+  components/        UI components (Header, InputPanel, OutputCard,
+                     HistoryDrawer, TemplateBar, …)
+  hooks/             usePwaInstall — beforeinstallprompt capture
   lib/
-    convert.ts       3-parallel-call orchestration
+    convert.ts       3-parallel-call orchestration + prompt builder
+    history.ts       save / prune / pin / clear conversation history
+    templates.ts     template presets + Dexie helpers
+    share.ts         encode/decode a run to a #c= URL hash
     xor.ts           API-key XOR obfuscation
     providers/       per-provider adapters (gateway, openai, gemini, custom)
+    *.test.ts        Vitest unit tests
   store/
     useStore.ts      Zustand global state
-    db.ts            Dexie schema
+    db.ts            Dexie schema (templates + conversations)
   types/             shared types + agrun type declarations
-docs/                providers.md, pwa.md, theme.md
+docs/                providers.md, pwa.md, theme.md, features.md
 scripts/gen-icons.mjs  generates PWA icons from scratch
 ```
 
@@ -83,6 +94,7 @@ scripts/gen-icons.mjs  generates PWA icons from scratch
 
 - [`DESIGN.md`](DESIGN.md) — original design spec
 - [`task.md`](task.md) — build roadmap and current status
+- [`docs/features.md`](docs/features.md) — history, templates, share, shortcuts
 - [`docs/providers.md`](docs/providers.md) — provider API reference
 - [`docs/pwa.md`](docs/pwa.md) — PWA configuration
 - [`docs/theme.md`](docs/theme.md) — theming system
