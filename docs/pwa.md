@@ -56,13 +56,27 @@ export default defineConfig({
 })
 ```
 
-## Required Icons
+## Icons
 
-Place in `public/`:
-- `pwa-192x192.png` — standard icon
-- `pwa-512x512.png` — large icon + maskable
-- `apple-touch-icon.png` — 180×180 for iOS
-- `mask-icon.svg` — Safari pinned tab
+Icons live in `public/` and are generated from scratch by
+`scripts/gen-icons.mjs` (pure Node — no image library): an indigo brand-color
+"P" mark kept within the maskable safe zone.
+
+| File | Size | Use |
+|---|---|---|
+| `pwa-192x192.png` | 192×192 | manifest |
+| `pwa-512x512.png` | 512×512 | manifest + maskable |
+| `apple-touch-icon.png` | 180×180 | iOS home screen |
+| `favicon.ico` | 32×32 | browser tab |
+
+Regenerate with:
+
+```bash
+node scripts/gen-icons.mjs
+```
+
+To use a real logo instead, replace these files in `public/` (keep the same
+names and sizes).
 
 ## Update Flow
 
