@@ -76,7 +76,7 @@ const VARIANTS: [
 ]
 
 // Build the system prompt for one variant by filling the template placeholders.
-function buildSystemPrompt(mode: GenerationMode, promptType: string, idx: number): string {
+export function buildSystemPrompt(mode: GenerationMode, promptType: string, idx: number): string {
   const variant = VARIANTS[idx]
   const fill = (s: string, key: string, value: string) => s.split(key).join(value)
   let out = SYSTEM_TEMPLATE
@@ -89,7 +89,7 @@ function buildSystemPrompt(mode: GenerationMode, promptType: string, idx: number
 
 // Fence the raw input as DATA. Strip any literal <draft> tags first so the
 // user's text cannot break out of the delimiter (injected-context firewall).
-function buildUserMessage(userPrompt: string): string {
+export function buildUserMessage(userPrompt: string): string {
   const safe = userPrompt.replace(/<\/?draft>/gi, '')
   return `<draft>\n${safe}\n</draft>`
 }
