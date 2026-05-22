@@ -73,10 +73,174 @@ Live: https://yapweijun1996.github.io/Prompt-Studio/
 
 ---
 
-## Open Items (not built)
+## Product Backlog — UX & Capability Roadmap
 
-- [ ] **TemplateManager UI** — Dexie schema (`db.ts`) ready; CRUD panel not built
-- [ ] **PWA install button** — `beforeinstallprompt` capture not wired
+Researched 2026-05-22 (web + KB-MCP). Ordered by **end-user pain**, not feature
+count.
+P1 = user loses work or can't use the app properly · P2 = friction · P3 = polish.
+
+This is a **single-shot tool** (one input → 3 outputs), not a chat app — so
+threads, branching, and streaming are deliberately out of scope. The patterns
+worth porting from chat UIs are only: a history list, search, and pin/favorite.
+
+---
+
+### P1-A · Generation History  — *the biggest current gap*
+
+**User pain.** Refresh or close the tab and every generated output is gone.
+The app persists nothing. Users cannot revisit "that good answer from earlier",
+compare across runs, or recover after an accidental reload.
+
+**Goal.** Every Convert is auto-saved locally; the user can browse, search,
+restore, and curate past runs — no account, no server, works offline.
+
+**UI / UX.**
+- A **History drawer** — slide-in panel from the Header (clock icon, left of
+  Settings). Overlay on mobile, push-aside on wide screens.
+- Items grouped by date headers: *Today · Yesterday · Earlier*. Each row shows
+  the input's first line, a prompt-type chip, the provider, and a relative
+  timestamp ("2h ago").
+- A **search box** at the top filters rows by input text.
+- Tap a row → restores that run: input box refilled + the 3 output cards shown
+  read-only. A **"Use as input"** action re-loads it for a fresh edit/Convert.
+- Per row: **pin** (★ — pinned rows float to the top, survive pruning) and
+  **delete**. A **two-step "Clear all history"** (stage → confirm; never a
+  one-click destructive action — KB-API Backup/Restore UX lesson).
+- A friendly **empty state** explaining what History is and that it stays on
+  this device.
+
+**Capability / data.**
+- New Dexie table `conversations`, kept **separate** from `templates`
+  (auto-written log vs. user-curated presets — different shapes, different
+  lifecycles). Schema:
+  `++id, title, input, promptType, mode, effort, provider, model, outputs, pinned, createdAt`
+  (`outputs` = JSON array of the 3 cards; `title` = derived from first line).
+- Auto-save on Convert completion. Cap ≈200 rows — prune oldest **unpinned**.
+- Fully available offline (IndexedDB).
+
+**Out of scope.** Conversation branching / threads — this is single-shot.
+
+---
+
+### P1-B · Mobile-First Responsive Layout
+
+**User pain.** The layout is desktop-centred (`max-w-5xl` body, 8-unit padding).
+On a phone the input/output area feels cramped, the Convert button can sit
+below the fold, and content can collide with notches / home indicators.
+
+**Goal.** A genuinely good experience on a phone held one-handed — the primary
+device for a "quick prompt" tool.
+
+**UI / UX.**
+- Output cards **stack vertically below 640px**, side-by-side from `md` up.
+- A **sticky bottom action bar** on mobile holding the Convert button, always
+  reachable by the thumb; inline at the top of InputPanel on desktop.
+- `safe-area-inset` padding (notch / home indicator) and `viewport-fit=cover`.
+- All tap targets ≥ 44×44px; larger textarea on small screens.
+- Header collapses secondary actions into an overflow menu under ~480px.
+
+**Capability / data.** CSS / layout only — no schema change.
+
+**Out of scope.** A separate native app — the PWA covers mobile (see P1-C).
+
+---
+
+### P1-C · Installable PWA (Add to Home Screen)
+
+**User pain.** The app is technically a PWA but never *invites* installation,
+so users never get the app-like launch (own icon, no browser chrome).
+
+**Goal.** One obvious, well-timed way to install on both phone and desktop.
+
+**UI / UX.**
+- Capture `beforeinstallprompt`; show a custom **Install** button in the Header
+  (hidden once installed or unsupported, e.g. iOS Safari).
+- A gentle **A2HS hint** after the *first successful Convert* — the moment the
+  user has seen the value (web.dev install-prompt guidance) — dismissible,
+  shown at most once.
+- iOS Safari: a short "Share → Add to Home Screen" instruction card, since iOS
+  has no `beforeinstallprompt`.
+- Add `screenshots` + `categories` to the manifest so Chrome shows the rich
+  install dialog instead of the minimal info-bar.
+
+**Capability / data.** Manifest fields + `beforeinstallprompt` handling.
+
+---
+
+### P2-A · Template Manager  *(schema already exists)*
+
+**User pain.** Users re-type the same prompt-type + system-prompt setup every
+session. The `templates` Dexie table exists but has **no UI**.
+
+**Goal.** Save the current setup as a named template and reapply it in one tap.
+
+**UI / UX.**
+- A **Templates** section in Settings (or a quick dropdown above the input):
+  list of saved templates, **Save current as template…**, apply, rename, delete.
+- Applying a template fills prompt type + system prompt; a small chip shows the
+  active template, with a one-tap "clear".
+- 2–3 **built-in starter templates** (e.g. *Rewrite formally*, *Summarize*,
+  *Brainstorm*) so the feature isn't empty on first use.
+
+**Capability / data.** `templates` table is ready. Add a `systemPrompt` flow
+into `convert.ts` if not yet wired through.
+
+---
+
+### P2-B · Share a Result
+
+**User pain.** No way to send a generated output to a colleague except manual
+copy-paste; copying loses the input/settings context.
+
+**Goal.** Share a result (or a whole run) with one tap — **local-first, no
+backend**, mirroring the proven `#tree=` URL-share pattern from the sister
+project Graph-of-Thought.
+
+**UI / UX.**
+- **Copy** button on each OutputCard (plain text / Markdown) — the safe default.
+- **Copy share link** — encodes the run into a URL hash
+  `#c=<base64(JSON)>` (input + settings + outputs); opening it rehydrates a
+  read-only view. No server, nothing indexable.
+- Optional **`share_target`** manifest entry so the installed PWA appears in the
+  OS share sheet to *receive* text as a new prompt.
+- A privacy note near the share action: "the link contains your prompt and
+  outputs — anyone with the link can read them."
+
+**Capability / data.** `share.ts` encode/decode of run state; route/handler for
+the `#c=` hash. Watch URL length — truncate or warn on very large runs.
+
+**Out of scope.** Server-side share pages, short links, accounts.
+
+---
+
+### P3 · Desktop Power-User Polish
+
+**User pain.** None blocking — keyboard-first users want speed.
+
+**Goal.** Faster repeat use on a PC.
+
+**UI / UX.**
+- Shortcuts: **⌘/Ctrl + ↵** Convert · **1 / 2 / 3** select a variant ·
+  **⌘/Ctrl + K** command palette (provider, mode, history, settings).
+- Optional roomier **two-pane layout ≥ 1280px** (input left, outputs right).
+- Per-card actions: regenerate just one variant; favorite a single card.
+
+**Capability / data.** UI only.
+
+---
+
+### Explicitly out of scope (so this isn't re-litigated)
+
+- **No server-side sharing** — privacy + no backend; URL-hash share only.
+- **No accounts / cloud sync** — local-first by design.
+- **No chat threads / branching** — single-shot tool.
+- **No streaming UI** — 3 parallel calls finish close together; a per-card
+  loading state is enough.
+
+---
+
+## Open Items (engineering, not user-facing)
+
 - [ ] **Tests** — no test suite yet
 - [ ] **Live provider E2E** — Default works; OpenAI/Gemini/Custom need a
   user key to verify end-to-end
