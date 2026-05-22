@@ -28,10 +28,15 @@ export default defineConfig({
         display: 'standalone',
         scope: '/',
         start_url: '/',
+        categories: ['productivity', 'utilities'],
         icons: [
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+        ],
+        screenshots: [
+          { src: 'screenshot-wide.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide' },
+          { src: 'screenshot-mobile.png', sizes: '500x915', type: 'image/png', form_factor: 'narrow' }
         ]
       },
       workbox: {
@@ -77,6 +82,18 @@ node scripts/gen-icons.mjs
 
 To use a real logo instead, replace these files in `public/` (keep the same
 names and sizes).
+
+## Install Prompt
+
+The app captures the `beforeinstallprompt` event (`src/hooks/usePwaInstall.ts`)
+and defers it. A custom **Install** button in the Header calls `prompt()`, and
+is shown only when the app is installable — hidden on browsers without the
+event (e.g. iOS Safari) and once the app is installed.
+
+`categories` and `screenshots` in the manifest make Chrome show its richer,
+app-store-style install dialog instead of the minimal info-bar. Screenshots
+live in `public/`: `screenshot-wide.png` (1280×800, `form_factor: wide`) and
+`screenshot-mobile.png` (500×915, `form_factor: narrow`).
 
 ## Update Flow
 

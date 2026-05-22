@@ -24,10 +24,27 @@ export interface Settings {
   thinkingBudget: number
 }
 
+// A named preset of the settings a user re-types each session.
 export interface Template {
   id?: number
   name: string
   promptType: string
-  systemPrompt: string
-  createdAt: Date
+  mode: GenerationMode
+  effort: EffortLevel
+  createdAt: number
+}
+
+// One saved Convert run — auto-written to IndexedDB on every conversion.
+export interface Conversation {
+  id?: number
+  title: string          // derived from the input's first line
+  input: string
+  promptType: string
+  mode: GenerationMode
+  effort: EffortLevel
+  provider: Provider
+  model: string
+  outputs: OutputCard[]
+  pinned: boolean
+  createdAt: number      // epoch ms
 }

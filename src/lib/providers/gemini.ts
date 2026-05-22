@@ -8,7 +8,7 @@ const EFFORT_TO_BUDGET: Record<EffortLevel, number> = {
 }
 
 // Flash models cap thinkingBudget at 24576; Pro models at 32768.
-function clampBudget(model: string, budget: number): number {
+export function clampBudget(model: string, budget: number): number {
   if (budget < 0) return budget // -1 = dynamic, leave as-is
   const max = model.toLowerCase().includes('flash') ? 24576 : 32768
   return Math.min(budget, max)

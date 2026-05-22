@@ -1,7 +1,7 @@
 # DESIGN.md
 
 ## Project Overview
-This project is a web-based prompt conversion system built with **Vite + React** (JS or TS — see open question below). It lets users enter a prompt, click **Convert**, and then review **up to 3 generated output options** so they can compare and select the best one.
+This project is a web-based prompt conversion system built with **Vite + React + TypeScript**. It lets users enter a prompt, click **Convert**, and then review **up to 3 generated output options** so they can compare and select the best one.
 
 ## Goals
 - Provide a fast, clean, and easy-to-use web interface
@@ -18,11 +18,11 @@ This project is a web-based prompt conversion system built with **Vite + React**
 - Not intended to replace a dedicated prompt management backend
 - Not intended to require complex onboarding
 
-## Open Questions (must resolve before scaffold)
-| # | Question | Status |
+## Resolved Decisions
+| # | Question | Decision |
 |---|---|---|
-| 1 | **JavaScript or TypeScript?** DESIGN.md says "React JS" but tech stack lists TypeScript. | ⏳ Pending user answer |
-| 2 | **Use agrun for agent logic, or plain `Promise.all` fetch?** agrun is a full agent runtime (planner/convergence loops). 3 parallel LLM calls may only need `Promise.all`. | ⏳ Pending user answer |
+| 1 | JavaScript or TypeScript? | **TypeScript** |
+| 2 | agrun.js or plain `Promise.all` fetch? | **agrun.js** (the user's own runtime). agrun is an agent runtime; Prompt Studio runs a one-shot turn and uses an `onInvalidPlannerOutput` hook to coerce the planner's plain-text reply into a final answer. Gemini uses a direct `fetch`. The 3 variant calls run via `Promise.allSettled`. |
 
 ---
 
@@ -222,10 +222,10 @@ Use **Zustand** for global state:
 | Layer | Choice | Notes |
 |---|---|---|
 | Build | **Vite 5** | Fast HMR, ESM output |
-| UI | **React** (JS or TS — pending) | |
-| Styling | **Tailwind CSS v4** + shadcn/ui | |
+| UI | **React 19 + TypeScript** | |
+| Styling | **Tailwind CSS v4** (semantic tokens) | |
 | State | **Zustand** | Simple global store |
-| LLM Transport | **agrun.js** (or plain fetch — pending) | See open questions |
+| LLM Transport | **agrun.js** | One-shot turn; Gemini uses direct fetch |
 | IndexedDB | **Dexie** | Typed IDB wrapper |
 | PWA | **vite-plugin-pwa ≥ 0.17** | Workbox generateSW |
 | Deploy | **GitHub Actions → GitHub Pages** | |
@@ -268,15 +268,17 @@ Use **Zustand** for global state:
 ---
 
 ## Future Enhancements
-- Save and manage prompt history
+
+Shipped 2026-05-22 (see `task.md`): prompt history with pin/favorite, prompt
+templates, local-first share links, keyboard shortcuts, installable PWA.
+
+Still open:
 - Export selected outputs
-- Drag-and-drop template organization
 - Compare outputs in a split-view mode
-- Tags and favorites
 - Markdown preview for generated outputs
-- Add prompt analytics or usage tracking
-- Streaming responses for real-time output
+- ⌘K command palette
 - Independent judge model for output ranking
+- Out of scope: streaming responses, server-side sharing, accounts/sync
 
 ---
 

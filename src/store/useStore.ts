@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { loadApiKey, saveApiKey } from '../lib/xor'
-import type { OutputCard, Provider, EffortLevel, GenerationMode, Theme } from '../types'
+import type { OutputCard, Provider, EffortLevel, GenerationMode, Theme, Conversation } from '../types'
 
 const THEME_KEY = 'ps_theme'
 
@@ -44,6 +44,8 @@ interface StoreState {
   setSelectedIndex: (i: number | null) => void
   setRateLimitUntil: (ts: number | null) => void
   toggleTheme: () => void
+  // Accepts a full Conversation (History) or a shared-link payload.
+  restoreConversation: (c: Pick<Conversation, 'input' | 'promptType' | 'mode' | 'effort' | 'outputs'>) => void
 }
 
 const SETTINGS_KEY = 'ps_settings'
@@ -127,5 +129,18 @@ export const useStore = create<StoreState>((set, get) => ({
     const next: Theme = get().theme === 'dark' ? 'light' : 'dark'
     applyTheme(next)
     set({ theme: next })
+  },
+  // Reload a past run (from History or a shared link) into the editor.
+  // Provider/model/key are intentionally left untouched.
+  restoreConversation: (c) => {
+    set({
+      input: c.input,
+      promptType: c.promptType,
+      mode: c.mode,
+      effort: c.effort,
+      outputs: c.outputs,
+      selectedIndex: null,
+    })
+    persistSettings(get())
   },
 }))
