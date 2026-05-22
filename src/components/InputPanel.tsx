@@ -1,6 +1,7 @@
 import { useStore } from '../store/useStore'
 import { convertPrompt } from '../lib/convert'
 import { saveConversation } from '../lib/history'
+import { TemplateBar } from './TemplateBar'
 import type { GenerationMode } from '../types'
 
 const PROMPT_TYPES = ['General', 'Code', 'Creative Writing', 'Analysis', 'Summary', 'Translation', 'Email', 'Marketing']
@@ -57,6 +58,8 @@ export function InputPanel() {
 
   return (
     <section className="flex flex-col gap-4">
+      <TemplateBar />
+
       {/* Prompt type + mode row */}
       <div className="flex flex-wrap gap-3">
         <div className="flex flex-col gap-1">
