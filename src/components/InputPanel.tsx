@@ -24,6 +24,7 @@ export function InputPanel() {
     try {
       const { rateLimited } = await convertPrompt({
         userPrompt: store.input,
+        promptType: store.promptType,
         mode: store.mode,
         provider: store.provider,
         apiKey: store.apiKey,
