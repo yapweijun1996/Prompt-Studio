@@ -13,7 +13,7 @@ export function Header() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-line">
+      <header className="flex items-center justify-between px-4 sm:px-6 pt-[calc(1rem_+_env(safe-area-inset-top))] pb-4 border-b border-line">
         <div className="flex items-center gap-2 min-w-0">
           <div className="w-7 h-7 shrink-0 rounded-lg bg-brand flex items-center justify-center text-white text-xs font-bold">P</div>
           <span className="font-semibold text-fg tracking-tight truncate">Prompt Studio</span>
