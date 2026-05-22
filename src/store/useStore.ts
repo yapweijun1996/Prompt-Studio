@@ -44,7 +44,8 @@ interface StoreState {
   setSelectedIndex: (i: number | null) => void
   setRateLimitUntil: (ts: number | null) => void
   toggleTheme: () => void
-  restoreConversation: (c: Conversation) => void
+  // Accepts a full Conversation (History) or a shared-link payload.
+  restoreConversation: (c: Pick<Conversation, 'input' | 'promptType' | 'mode' | 'effort' | 'outputs'>) => void
 }
 
 const SETTINGS_KEY = 'ps_settings'
