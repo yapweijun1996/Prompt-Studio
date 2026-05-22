@@ -16,7 +16,8 @@ export default defineConfig({
       manifest: {
         name: 'Prompt Studio',
         short_name: 'PromptStudio',
-        description: 'Convert prompts into up to 3 AI-generated options',
+        description: 'Convert one prompt into up to 3 selectable AI-generated options',
+        categories: ['productivity', 'utilities'],
         theme_color: '#0f172a',
         background_color: '#0f172a',
         display: 'standalone',
@@ -26,6 +27,11 @@ export default defineConfig({
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
+        // Screenshots make Chrome show the richer install dialog.
+        screenshots: [
+          { src: 'screenshot-wide.png', sizes: '1280x800', type: 'image/png', form_factor: 'wide' },
+          { src: 'screenshot-mobile.png', sizes: '500x915', type: 'image/png', form_factor: 'narrow' },
         ],
       },
       workbox: {

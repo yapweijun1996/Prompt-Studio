@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
+import { usePwaInstall } from '../hooks/usePwaInstall'
 import { SettingsModal } from './SettingsModal'
 import { HistoryDrawer } from './HistoryDrawer'
 import { ThemeToggle } from './ThemeToggle'
 
 export function Header() {
   const provider = useStore((s) => s.provider)
+  const { canInstall, promptInstall } = usePwaInstall()
   const [showSettings, setShowSettings] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
 
@@ -23,6 +25,18 @@ export function Header() {
           <span className="hidden sm:inline text-[11px] font-medium px-2.5 py-1 rounded-full bg-surface-hi text-fg-dim">
             {provider === 'default' ? 'Demo key (built-in)' : provider.toUpperCase()}
           </span>
+          {canInstall && (
+            <button
+              onClick={promptInstall}
+              className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-brand-tint text-brand transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              Install
+            </button>
+          )}
           <button onClick={() => setShowHistory(true)} className={iconBtn} aria-label="History">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
