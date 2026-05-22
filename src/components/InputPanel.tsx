@@ -45,18 +45,18 @@ export function InputPanel() {
       {/* Prompt type + mode row */}
       <div className="flex flex-wrap gap-3">
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-slate-400 font-medium uppercase tracking-wide">Prompt Type</label>
+          <label className="text-xs text-fg-dim font-medium uppercase tracking-wide">Prompt Type</label>
           <select
             value={store.promptType}
             onChange={(e) => store.setPromptType(e.target.value)}
-            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white"
+            className="bg-surface-hi border border-line rounded-lg px-3 py-2 text-sm text-fg"
           >
             {PROMPT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-slate-400 font-medium uppercase tracking-wide">Mode</label>
+          <label className="text-xs text-fg-dim font-medium uppercase tracking-wide">Mode</label>
           <div className="flex gap-1.5">
             {MODES.map((m) => (
               <button
@@ -65,8 +65,8 @@ export function InputPanel() {
                 title={m.desc}
                 className={`px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${
                   store.mode === m.value
-                    ? 'border-[oklch(0.55_0.22_260)] bg-[oklch(0.55_0.22_260/0.15)] text-white'
-                    : 'border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-600'
+                    ? 'border-brand bg-brand-tint text-fg'
+                    : 'border-line bg-surface-hi text-fg-dim hover:border-line-hi'
                 }`}
               >
                 {m.label}
@@ -82,14 +82,14 @@ export function InputPanel() {
         onChange={(e) => store.setInput(e.target.value)}
         placeholder="Enter your prompt here…"
         rows={6}
-        className="w-full bg-slate-900 border border-slate-700 focus:border-[oklch(0.55_0.22_260)] rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 resize-none outline-none transition-colors"
+        className="w-full bg-surface border border-line focus:border-brand rounded-xl px-4 py-3 text-sm text-fg placeholder:text-fg-faint resize-none outline-none transition-colors"
       />
 
       {/* Convert button */}
       <button
         onClick={handleConvert}
         disabled={!canConvert}
-        className="self-end px-6 py-2.5 rounded-xl bg-[oklch(0.55_0.22_260)] hover:bg-[oklch(0.45_0.18_260)] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-all flex items-center gap-2"
+        className="self-end px-6 py-2.5 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-all flex items-center gap-2"
       >
         {store.loading && (
           <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
