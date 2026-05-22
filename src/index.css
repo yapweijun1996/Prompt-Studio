@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand: oklch(0.55 0.22 260);
+  --color-brand-dim: oklch(0.45 0.18 260);
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 font-sans antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
