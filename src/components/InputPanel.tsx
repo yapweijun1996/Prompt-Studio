@@ -1,5 +1,6 @@
 import { useStore } from '../store/useStore'
 import { convertPrompt } from '../lib/convert'
+import { saveConversation } from '../lib/history'
 import type { GenerationMode } from '../types'
 
 const PROMPT_TYPES = ['General', 'Code', 'Creative Writing', 'Analysis', 'Summary', 'Translation', 'Email', 'Marketing']
@@ -35,6 +36,19 @@ export function InputPanel() {
       })
       if (rateLimited) {
         store.setRateLimitUntil(Date.now() + 60_000)
+      }
+      // Auto-save to history if at least one variant succeeded.
+      const finalOutputs = useStore.getState().outputs
+      if (finalOutputs.some((c) => c.status === 'done')) {
+        void saveConversation({
+          input: store.input,
+          promptType: store.promptType,
+          mode: store.mode,
+          effort: store.effort,
+          provider: store.provider,
+          model: store.model,
+          outputs: finalOutputs,
+        }).catch(() => {})
       }
     } finally {
       store.setLoading(false)
