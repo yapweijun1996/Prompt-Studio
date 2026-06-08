@@ -5,7 +5,7 @@ import { saveConversation } from '../lib/history'
 import { TemplateBar } from './TemplateBar'
 import type { GenerationMode } from '../types'
 
-const PROMPT_TYPES = ['General', 'Code', 'Creative Writing', 'Analysis', 'Summary', 'Translation', 'Email', 'Marketing']
+const PROMPT_TYPES = ['General', 'Code', 'Coding Agent', 'Creative Writing', 'Analysis', 'Summary', 'Translation', 'Email', 'Marketing']
 
 const MODES: { value: GenerationMode; label: string; desc: string }[] = [
   { value: 'creative', label: 'Creative', desc: 'Vivid & expressive' },
