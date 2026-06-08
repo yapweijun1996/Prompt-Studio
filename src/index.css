@@ -55,6 +55,11 @@
   --c-brand-tint: oklch(0.55 0.22 260 / 0.15);
 }
 
+/* Prevent pull-to-refresh in PWA standalone mode (iOS). */
+html {
+  overscroll-behavior: none;
+}
+
 body {
   @apply bg-canvas text-fg font-sans antialiased;
 }

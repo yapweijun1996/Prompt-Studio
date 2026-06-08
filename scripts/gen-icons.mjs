@@ -29,11 +29,17 @@ function inP(nx, ny) {
   return false
 }
 
-function makePixels(size) {
+// safeZone = fraction of padding on each side (0 = edge-to-edge, 0.1 = 80% safe zone).
+// PWA maskable icons need the artwork inside the central 80% so the OS can crop
+// to a circle/squircle without clipping the glyph.
+function makePixels(size, safeZone = 0) {
   const buf = Buffer.alloc(size * size * 4)
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
-      const [r, g, b] = inP((x + 0.5) / size, (y + 0.5) / size) ? FG : BG
+      const gx = ((x + 0.5) / size - safeZone) / (1 - 2 * safeZone)
+      const gy = ((y + 0.5) / size - safeZone) / (1 - 2 * safeZone)
+      const inside = gx >= 0 && gx <= 1 && gy >= 0 && gy <= 1 && inP(gx, gy)
+      const [r, g, b] = inside ? FG : BG
       const i = (y * size + x) * 4
       buf[i] = r; buf[i + 1] = g; buf[i + 2] = b; buf[i + 3] = 255
     }
@@ -50,8 +56,8 @@ function chunk(type, data) {
   return Buffer.concat([len, body, crc])
 }
 
-function encodePNG(size) {
-  const pixels = makePixels(size)
+function encodePNG(size, safeZone = 0) {
+  const pixels = makePixels(size, safeZone)
   const sig = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
   const ihdr = Buffer.alloc(13)
   ihdr.writeUInt32BE(size, 0)
@@ -88,6 +94,10 @@ function encodeICO(png, size) {
 const targets = [
   ['pwa-192x192.png', encodePNG(192)],
   ['pwa-512x512.png', encodePNG(512)],
+  // Maskable icons — 10% safe-zone padding so the OS crop (circle/squircle)
+  // never clips the "P" glyph.  Separate files; never combine "any maskable".
+  ['pwa-maskable-192x192.png', encodePNG(192, 0.1)],
+  ['pwa-maskable-512x512.png', encodePNG(512, 0.1)],
   ['apple-touch-icon.png', encodePNG(180)],
   ['favicon.ico', encodeICO(encodePNG(32), 32)],
 ]
