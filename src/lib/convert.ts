@@ -236,6 +236,8 @@ const VARIANTS: [
 ]
 
 function detectLanguage(text: string): PromptLanguage {
+  const zhInstruction = /(?:\b(?:reply|respond|answer|write|output|use|show|generate|create|翻译)\b[^。\n!?;]*?\b(?:中文|中文.*(回复|回答)|普通话|chinese|mandarin)\b|\b(?:中文|中文.*(回复|回答)|普通话|chinese|mandarin)\b[^。\n!?;]*?\b(?:reply|respond|answer|write|output|use|show|generate|create)\b)/i
+  if (zhInstruction.test(text)) return 'zh'
   return /[\u4e00-\u9fff]/.test(text) ? 'zh' : 'en'
 }
 

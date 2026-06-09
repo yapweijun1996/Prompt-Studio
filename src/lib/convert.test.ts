@@ -70,6 +70,18 @@ describe('getVariantLabels', () => {
       '选项 3 - 简洁',
     ])
   })
+
+  it('returns Chinese labels when input explicitly asks in English to reply in Chinese', () => {
+    expect(getVariantLabels('General', 'reply me Mandarin')).toEqual([
+      '选项 1 - 直出',
+      '选项 2 - 结构化',
+      '选项 3 - 简洁',
+    ])
+  })
+
+  it('builds Chinese system prompt when input asks in English for Mandarin output', () => {
+    expect(buildSystemPrompt('balanced', 'Email', 0, 'reply me mandarin')).toContain('将草稿改写为')
+  })
 })
 
 describe('buildUserMessage', () => {
