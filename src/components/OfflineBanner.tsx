@@ -14,7 +14,7 @@ export function OfflineBanner() {
   if (!offline) return null
   return (
     <div className="fixed top-0 inset-x-0 z-50 bg-amber-600 text-white text-sm text-center py-1.5 px-4">
-      You are offline — app shell available but AI calls will fail.
+      当前离线，仅本地界面可用，AI 请求将无法执行
     </div>
   )
 }

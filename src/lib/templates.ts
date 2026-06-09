@@ -11,8 +11,8 @@ export interface TemplatePreset {
 
 // Built-in starters so the feature isn't empty on first use.
 export const STARTER_TEMPLATES: TemplatePreset[] = [
-  { name: 'Polished email', promptType: 'Email', mode: 'strict', effort: 'medium' },
-  { name: 'Brainstorm ideas', promptType: 'Creative Writing', mode: 'creative', effort: 'medium' },
+  { name: '润色邮件', promptType: 'Email', mode: 'strict', effort: 'medium' },
+  { name: '头脑风暴', promptType: 'Creative Writing', mode: 'creative', effort: 'medium' },
 ]
 
 export async function saveTemplate(t: Omit<Template, 'id' | 'createdAt'>): Promise<void> {

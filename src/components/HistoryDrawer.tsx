@@ -7,11 +7,11 @@ import type { Conversation } from '../types'
 
 function relativeTime(ts: number): string {
   const min = Math.floor((Date.now() - ts) / 60000)
-  if (min < 1) return 'just now'
-  if (min < 60) return `${min}m ago`
+  if (min < 1) return '刚刚'
+  if (min < 60) return `${min} 分钟前`
   const hr = Math.floor(min / 60)
-  if (hr < 24) return `${hr}h ago`
-  return `${Math.floor(hr / 24)}d ago`
+  if (hr < 24) return `${hr} 小时前`
+  return `${Math.floor(hr / 24)} 天前`
 }
 
 function dayBucket(ts: number): 'Today' | 'Yesterday' | 'Earlier' {
@@ -32,13 +32,19 @@ export function HistoryDrawer({ onClose }: { onClose: () => void }) {
   const q = query.trim().toLowerCase()
   const items = (all ?? []).filter((c) => (q ? c.input.toLowerCase().includes(q) : true))
 
-  // Pinned rows float to the top in their own group; the rest group by day.
   const groups: { label: string; rows: Conversation[] }[] = []
   const pinned = items.filter((c) => c.pinned)
-  if (pinned.length) groups.push({ label: 'Pinned', rows: pinned })
+  if (pinned.length) groups.push({ label: '已置顶', rows: pinned })
   for (const label of ['Today', 'Yesterday', 'Earlier'] as const) {
     const rows = items.filter((c) => !c.pinned && dayBucket(c.createdAt) === label)
-    if (rows.length) groups.push({ label, rows })
+    if (rows.length) {
+      const map: Record<'Today' | 'Yesterday' | 'Earlier', string> = {
+        Today: '今天',
+        Yesterday: '昨天',
+        Earlier: '更早',
+      }
+      groups.push({ label: map[label], rows })
+    }
   }
 
   function handleRestore(c: Conversation) {
@@ -54,11 +60,11 @@ export function HistoryDrawer({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-line">
-          <h2 className="text-lg font-semibold text-fg">History</h2>
+          <h2 className="text-lg font-semibold text-fg">历史记录</h2>
           <button
             onClick={onClose}
             className="text-fg-dim hover:text-fg text-2xl leading-none w-9 h-9 flex items-center justify-center"
-            aria-label="Close history"
+            aria-label="关闭历史记录"
           >
             &times;
           </button>
@@ -68,7 +74,7 @@ export function HistoryDrawer({ onClose }: { onClose: () => void }) {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search history…"
+            placeholder="搜索历史..."
             className="w-full bg-surface-hi border border-line rounded-lg px-3 py-2 text-sm text-fg placeholder:text-fg-faint outline-none focus:border-brand"
           />
         </div>
@@ -76,9 +82,7 @@ export function HistoryDrawer({ onClose }: { onClose: () => void }) {
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
             <div className="px-6 py-14 text-center text-fg-faint text-sm leading-relaxed">
-              {all && all.length > 0
-                ? 'No conversations match your search.'
-                : 'No history yet. Every conversion you run is saved here — on this device only.'}
+              {all && all.length > 0 ? '未找到匹配记录。' : '还没有历史记录。所有转换会保存在本机。'}
             </div>
           ) : (
             groups.map((g) => (
@@ -102,16 +106,16 @@ export function HistoryDrawer({ onClose }: { onClose: () => void }) {
                       className={`shrink-0 w-9 h-9 flex items-center justify-center text-sm ${
                         c.pinned ? 'text-brand' : 'text-fg-faint hover:text-fg-dim'
                       }`}
-                      aria-label={c.pinned ? 'Unpin' : 'Pin'}
-                      title={c.pinned ? 'Unpin' : 'Pin'}
+                      aria-label={c.pinned ? '取消置顶' : '置顶'}
+                      title={c.pinned ? '取消置顶' : '置顶'}
                     >
-                      ★
+                      {c.pinned ? '★' : '☆'}
                     </button>
                     <button
                       onClick={() => deleteConversation(c.id as number)}
                       className="shrink-0 w-9 h-9 flex items-center justify-center text-lg text-fg-faint hover:text-danger"
-                      aria-label="Delete"
-                      title="Delete"
+                      aria-label="删除"
+                      title="删除"
                     >
                       &times;
                     </button>
@@ -133,13 +137,13 @@ export function HistoryDrawer({ onClose }: { onClose: () => void }) {
                   }}
                   className="flex-1 py-2 rounded-lg bg-danger text-white text-xs font-medium"
                 >
-                  Confirm — clear all
+                  确认清空全部
                 </button>
                 <button
                   onClick={() => setConfirmClear(false)}
                   className="flex-1 py-2 rounded-lg bg-surface-hi text-fg-dim text-xs"
                 >
-                  Cancel
+                  取消
                 </button>
               </div>
             ) : (
@@ -147,7 +151,7 @@ export function HistoryDrawer({ onClose }: { onClose: () => void }) {
                 onClick={() => setConfirmClear(true)}
                 className="w-full py-2 rounded-lg bg-surface-hi hover:bg-surface-hover text-fg-dim text-xs"
               >
-                Clear all history
+                清空历史
               </button>
             )}
           </div>

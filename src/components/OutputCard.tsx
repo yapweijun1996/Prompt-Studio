@@ -32,7 +32,7 @@ export function OutputCard({ card }: { card: OutputCardType }) {
         <span className="text-xs font-semibold text-fg-dim tracking-wide uppercase">{card.label}</span>
         {isSelected && (
           <span className="text-[10px] font-bold text-brand bg-brand-tint px-2 py-0.5 rounded-full">
-            Selected
+            已选择
           </span>
         )}
       </div>
@@ -40,12 +40,12 @@ export function OutputCard({ card }: { card: OutputCardType }) {
       {card.status === 'loading' && (
         <div className="flex items-center gap-2 text-fg-faint text-sm py-4">
           <span className="inline-block w-4 h-4 rounded-full border-2 border-line-hi border-t-brand animate-spin" />
-          Generating...
+          生成中...
         </div>
       )}
 
       {card.status === 'error' && (
-        <div className="text-danger text-sm py-2">{card.error ?? 'Request failed'}</div>
+        <div className="text-danger text-sm py-2">{card.error ?? '请求失败'}</div>
       )}
 
       {card.status === 'done' && (
@@ -58,7 +58,7 @@ export function OutputCard({ card }: { card: OutputCardType }) {
             onClick={handleCopy}
             className="flex-1 py-1.5 rounded-lg bg-surface-hi hover:bg-surface-hover text-xs text-fg-muted transition-colors"
           >
-            {copyState === 'copied' ? 'Copied!' : copyState === 'failed' ? 'Copy failed' : 'Copy'}
+            {copyState === 'copied' ? '已复制' : copyState === 'failed' ? '复制失败' : '复制'}
           </button>
           <button
             onClick={() => setSelectedIndex(isSelected ? null : card.id)}
@@ -68,7 +68,7 @@ export function OutputCard({ card }: { card: OutputCardType }) {
                 : 'bg-brand hover:bg-brand-hover text-white'
             }`}
           >
-            {isSelected ? 'Deselect' : 'Select'}
+            {isSelected ? '取消选择' : '选择'}
           </button>
         </div>
       )}

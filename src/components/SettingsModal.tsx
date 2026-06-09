@@ -3,17 +3,17 @@ import { useStore } from '../store/useStore'
 import type { Provider, EffortLevel, GenerationMode } from '../types'
 
 const PROVIDERS: { value: Provider; label: string }[] = [
-  { value: 'default', label: 'Default (Demo Gateway)' },
+  { value: 'default', label: '默认（内置网关）' },
   { value: 'openai', label: 'OpenAI' },
   { value: 'gemini', label: 'Gemini' },
-  { value: 'custom', label: 'Custom (OpenAI-compatible)' },
+  { value: 'custom', label: '自定义（OpenAI 兼容）' },
 ]
 
 const EFFORT_LEVELS: { value: EffortLevel; label: string; desc: string }[] = [
-  { value: 'low', label: 'Quick', desc: 'Fast, minimal reasoning' },
-  { value: 'medium', label: 'Balanced', desc: 'Default quality/speed' },
-  { value: 'high', label: 'Thorough', desc: 'Deep reasoning' },
-  { value: 'xhigh', label: 'Deep', desc: 'Max reasoning (GPT-5.2+ / Gemini Pro only)' },
+  { value: 'low', label: '快速', desc: '速度优先，推理较少' },
+  { value: 'medium', label: '平衡', desc: '默认质量与速度平衡' },
+  { value: 'high', label: '深入', desc: '更深度的推理' },
+  { value: 'xhigh', label: '强深', desc: '最高推理强度（仅 GPT-5.2+ / Gemini Pro）' },
 ]
 
 const OPENAI_MODELS = ['gpt-5.4-mini', 'o4-mini', 'o3', 'gpt-5.2']
@@ -34,13 +34,13 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-fg">Settings</h2>
+          <h2 className="text-lg font-semibold text-fg">设置</h2>
           <button onClick={onClose} className="text-fg-dim hover:text-fg text-xl leading-none">&times;</button>
         </div>
 
         {/* Provider */}
         <div className="flex flex-col gap-1.5">
-          <label className={labelClass}>Provider</label>
+          <label className={labelClass}>服务商</label>
           <select
             value={store.provider}
             onChange={(e) => store.setProvider(e.target.value as Provider)}
@@ -53,7 +53,7 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
         {/* Model */}
         {store.provider !== 'default' && (
           <div className="flex flex-col gap-1.5">
-            <label className={labelClass}>Model</label>
+            <label className={labelClass}>模型</label>
             {store.provider === 'openai' ? (
               <select value={store.model} onChange={(e) => store.setModel(e.target.value)} className={fieldClass}>
                 {OPENAI_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
@@ -76,7 +76,7 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
         {/* Custom endpoint */}
         {store.provider === 'custom' && (
           <div className="flex flex-col gap-1.5">
-            <label className={labelClass}>Endpoint (base URL)</label>
+            <label className={labelClass}>端点地址（Base URL）</label>
             <input
               value={store.endpoint}
               onChange={(e) => store.setEndpoint(e.target.value)}
@@ -102,22 +102,22 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
                 onClick={() => setShowKey((v) => !v)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-fg-dim hover:text-fg"
               >
-                {showKey ? 'Hide' : 'Show'}
+                {showKey ? '隐藏' : '显示'}
               </button>
             </div>
-            <p className="text-[11px] text-fg-faint">Stored XOR-obfuscated in localStorage.</p>
+            <p className="text-[11px] text-fg-faint">仅保存在本机，并进行 XOR 混淆。</p>
           </div>
         )}
 
         {store.provider === 'default' && (
           <div className="bg-surface-hi rounded-lg px-3 py-2 text-xs text-fg-dim">
-            Demo key (built-in) — rate limited to 30 req/min.
+            演示密钥（内置）每分钟限制 30 次请求。
           </div>
         )}
 
         {/* Effort */}
         <div className="flex flex-col gap-1.5">
-          <label className={labelClass}>Reasoning Effort</label>
+          <label className={labelClass}>推理强度</label>
           <div className="grid grid-cols-2 gap-2">
             {EFFORT_LEVELS.map((e) => (
               <button
@@ -138,7 +138,7 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
 
         {/* Default mode */}
         <div className="flex flex-col gap-1.5">
-          <label className={labelClass}>Default Generation Mode</label>
+          <label className={labelClass}>默认输出风格</label>
           <div className="flex gap-2">
             {(['creative', 'balanced', 'strict'] as GenerationMode[]).map((m) => (
               <button
@@ -160,7 +160,7 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
           onClick={onClose}
           className="mt-1 py-2 rounded-xl bg-brand hover:bg-brand-hover text-white text-sm font-medium transition-colors"
         >
-          Done
+          完成
         </button>
       </div>
     </div>

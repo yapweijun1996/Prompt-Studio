@@ -37,13 +37,17 @@ export function OutputList() {
       {hasResult && (
         <div className="flex items-center justify-between gap-3">
           <p className="text-[11px] text-fg-faint">
-            The share link embeds your prompt and outputs; anyone with it can read them.
+            分享链接会包含当前请求与结果，拿到链接的人都能看到内容。
           </p>
           <button
             onClick={handleShare}
             className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-surface-hi hover:bg-surface-hover text-fg-muted transition-colors"
           >
-            {copyState === 'copied' ? 'Link copied!' : copyState === 'failed' ? 'Copy failed' : 'Copy share link'}
+            {copyState === 'copied'
+              ? '链接已复制'
+              : copyState === 'failed'
+                ? '复制失败'
+                : '复制分享链接'}
           </button>
         </div>
       )}

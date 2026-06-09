@@ -29,11 +29,11 @@ export default function App() {
       <PwaUpdateBanner />
       {sharedNotice && (
         <div className="bg-brand-tint text-brand text-sm px-4 py-2 flex items-center justify-between gap-3">
-          <span>Loaded from a shared link — the prompt and outputs below came from someone else.</span>
+          <span>已从分享链接恢复：下方内容为他人分享的提示词和结果，仅供参考。</span>
           <button
             onClick={() => setSharedNotice(false)}
             className="shrink-0 text-lg leading-none opacity-70 hover:opacity-100"
-            aria-label="Dismiss"
+            aria-label="关闭"
           >
             &times;
           </button>

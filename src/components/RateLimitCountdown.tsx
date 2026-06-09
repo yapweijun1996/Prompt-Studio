@@ -21,7 +21,7 @@ export function RateLimitCountdown() {
   if (!rateLimitUntil) return null
   return (
     <div className="text-center text-amber-500 text-sm py-2">
-      Rate limited — retry in {secs}s
+      请求限流中，请 {secs}s 后重试
     </div>
   )
 }

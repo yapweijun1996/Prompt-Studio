@@ -5,12 +5,22 @@ import { saveConversation } from '../lib/history'
 import { TemplateBar } from './TemplateBar'
 import type { GenerationMode } from '../types'
 
-const PROMPT_TYPES = ['General', 'Code', 'Coding Agent', 'Creative Writing', 'Analysis', 'Summary', 'Translation', 'Email', 'Marketing']
+const PROMPT_TYPES: { value: string; label: string }[] = [
+  { value: 'General', label: '通用' },
+  { value: 'Code', label: '代码' },
+  { value: 'Coding Agent', label: '编码代理' },
+  { value: 'Creative Writing', label: '创意写作' },
+  { value: 'Analysis', label: '分析' },
+  { value: 'Summary', label: '总结' },
+  { value: 'Translation', label: '翻译' },
+  { value: 'Email', label: '邮件' },
+  { value: 'Marketing', label: '营销' },
+]
 
 const MODES: { value: GenerationMode; label: string; desc: string }[] = [
-  { value: 'creative', label: 'Creative', desc: 'Vivid & expressive' },
-  { value: 'balanced', label: 'Balanced', desc: 'Clear & structured' },
-  { value: 'strict', label: 'Strict', desc: 'Precise & concise' },
+  { value: 'creative', label: '创意', desc: '更多变体和想象空间' },
+  { value: 'balanced', label: '平衡', desc: '清晰、稳定' },
+  { value: 'strict', label: '严谨', desc: '更精确、可复用' },
 ]
 
 export function InputPanel() {
@@ -90,18 +100,18 @@ export function InputPanel() {
       {/* Prompt type + mode row */}
       <div className="flex flex-wrap gap-3">
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-fg-dim font-medium uppercase tracking-wide">Prompt Type</label>
+          <label className="text-xs text-fg-dim font-medium uppercase tracking-wide">提示类型</label>
           <select
             value={store.promptType}
             onChange={(e) => store.setPromptType(e.target.value)}
             className="bg-surface-hi border border-line rounded-lg px-3 py-2 text-sm text-fg"
           >
-            {PROMPT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+            {PROMPT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-fg-dim font-medium uppercase tracking-wide">Mode</label>
+          <label className="text-xs text-fg-dim font-medium uppercase tracking-wide">输出风格</label>
           <div className="flex gap-1.5">
             {MODES.map((m) => (
               <button
@@ -125,7 +135,7 @@ export function InputPanel() {
       <textarea
         value={store.input}
         onChange={(e) => store.setInput(e.target.value)}
-        placeholder="Enter your prompt here…"
+        placeholder="在这里输入你的原始请求，例如：帮我修复某个 bug..."
         rows={6}
         className="w-full bg-surface border border-line focus:border-brand rounded-xl px-4 py-3 text-sm text-fg placeholder:text-fg-faint resize-none outline-none transition-colors"
       />
@@ -135,13 +145,13 @@ export function InputPanel() {
         <button
           onClick={handleConvert}
           disabled={!canConvert}
-          title="Convert  (Ctrl / ⌘ + Enter)"
+          title="生成优化提示（Ctrl / ⌘ + Enter）"
           className="w-full md:w-auto px-6 py-3 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-all flex items-center justify-center gap-2"
         >
           {store.loading && (
             <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
           )}
-          {store.loading ? 'Generating…' : 'Convert'}
+          {store.loading ? '正在生成...' : '生成'}
         </button>
       </div>
     </section>

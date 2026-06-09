@@ -9,8 +9,8 @@ export function ThemeToggle() {
     <button
       onClick={toggleTheme}
       className="text-fg-dim hover:text-fg transition-colors"
-      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-      title={isDark ? 'Light mode' : 'Dark mode'}
+      aria-label={isDark ? '切换到浅色模式' : '切换到深色模式'}
+      title={isDark ? '浅色模式' : '深色模式'}
     >
       {isDark ? (
         // Sun

@@ -49,17 +49,25 @@ describe('buildSystemPrompt', () => {
 describe('getVariantLabels', () => {
   it('returns coding labels for Coding Agent', () => {
     expect(getVariantLabels('Coding Agent')).toEqual([
-      'Option 1 — Scoped',
-      'Option 2 — Work Order',
-      'Option 3 — Compact',
+      'Option 1 - Scoped',
+      'Option 2 - Work Order',
+      'Option 3 - Compact',
     ])
   })
 
   it('returns general labels for other types', () => {
     expect(getVariantLabels('General')).toEqual([
-      'Option 1 — Direct',
-      'Option 2 — Structured',
-      'Option 3 — Concise',
+      'Option 1 - Direct',
+      'Option 2 - Structured',
+      'Option 3 - Concise',
+    ])
+  })
+
+  it('returns Chinese labels when input is Chinese', () => {
+    expect(getVariantLabels('General', '帮我写一封邮件')).toEqual([
+      '选项 1 - 直出',
+      '选项 2 - 结构化',
+      '选项 3 - 简洁',
     ])
   })
 })

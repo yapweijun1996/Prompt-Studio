@@ -35,7 +35,7 @@ export function TemplateBar() {
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-xs text-fg-dim font-medium uppercase tracking-wide">Templates</label>
+      <label className="text-xs text-fg-dim font-medium uppercase tracking-wide">模板</label>
       <div className="flex flex-wrap items-center gap-1.5">
         {STARTER_TEMPLATES.map((t) => (
           <button key={t.name} onClick={() => apply(t)} className={chip} title={`${t.promptType} · ${t.mode} · ${t.effort}`}>
@@ -55,8 +55,8 @@ export function TemplateBar() {
             <button
               onClick={() => deleteTemplate(t.id as number)}
               className="text-xs px-1.5 py-1 rounded-r-full border border-l-0 border-line bg-surface-hi text-fg-faint hover:text-danger"
-              aria-label={`Delete template ${t.name}`}
-              title="Delete template"
+              aria-label={`删除模板 ${t.name}`}
+              title="删除模板"
             >
               &times;
             </button>
@@ -76,11 +76,11 @@ export function TemplateBar() {
                   setName('')
                 }
               }}
-              placeholder="Template name…"
+              placeholder="模板名称"
               className="text-xs px-2.5 py-1 rounded-full border border-brand bg-surface-hi text-fg w-36 outline-none"
             />
             <button onClick={() => void handleSave()} className="text-xs px-2.5 py-1 rounded-full bg-brand text-white">
-              Save
+              保存
             </button>
             <button
               onClick={() => {
@@ -89,12 +89,12 @@ export function TemplateBar() {
               }}
               className="text-xs px-1.5 py-1 text-fg-faint hover:text-fg-dim"
             >
-              Cancel
+              取消
             </button>
           </span>
         ) : (
           <button onClick={() => setNaming(true)} className={`${chip} text-brand border-brand-tint`}>
-            + Save current
+            + 保存当前设置
           </button>
         )}
       </div>
