@@ -236,8 +236,16 @@ const VARIANTS: [
 ]
 
 function detectLanguage(text: string): PromptLanguage {
-  const zhInstruction = /(?:\b(?:reply|respond|answer|write|output|use|show|generate|create|翻译)\b[^。\n!?;]*?\b(?:中文|中文.*(回复|回答)|普通话|chinese|mandarin)\b|\b(?:中文|中文.*(回复|回答)|普通话|chinese|mandarin)\b[^。\n!?;]*?\b(?:reply|respond|answer|write|output|use|show|generate|create)\b)/i
-  if (zhInstruction.test(text)) return 'zh'
+  const explicitEnglish =
+    /(?:\b(?:reply|respond|answer|write|output|generate|create|translate|convert)\b[^\u3002!?;\n]*?\b(?:english|en\b|\u82f1\u6587)\b|\b(?:english|en\b|\u82f1\u6587|\u7f8e\u56fd\u8bed)\b[^\u3002!?;\n]*?\b(?:reply|respond|answer|write|output|generate|create|translate|convert)\b)/i
+
+  if (explicitEnglish.test(text)) return 'en'
+
+  const explicitChinese =
+    /(?:\b(?:reply|respond|answer|write|output|generate|create|translate|convert)\b[^\u3002!?;\n]*?\b(?:\u4e2d\u6587|\u666e\u901a\u8bdd|\u6c49\u8bed|chinese|mandarin|\u56de\u590d|\u56de\u7b54)\b|\b(?:\u4e2d\u6587|\u666e\u901a\u8bdd|\u6c49\u8bed|chinese|mandarin)\b[^\u3002!?;\n]*?\b(?:reply|respond|answer|write|output|generate|create|translate|convert)\b)/i
+
+  if (explicitChinese.test(text)) return 'zh'
+
   return /[\u4e00-\u9fff]/.test(text) ? 'zh' : 'en'
 }
 

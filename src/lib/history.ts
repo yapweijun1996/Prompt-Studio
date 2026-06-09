@@ -6,8 +6,8 @@ const MAX_HISTORY = 200
 
 function deriveTitle(input: string): string {
   const firstLine = input.trim().split('\n')[0].trim()
-  if (!firstLine) return 'Untitled'
-  return firstLine.length > 80 ? firstLine.slice(0, 80) + '…' : firstLine
+  if (!firstLine) return '未命名会话'
+  return firstLine.length > 80 ? firstLine.slice(0, 80) + '...' : firstLine
 }
 
 /** Persist one completed Convert run, then prune old unpinned rows. */

@@ -11,11 +11,9 @@ describe('buildSystemPrompt', () => {
     expect(buildSystemPrompt('strict', 'Translation', 1)).toContain('Translation')
   })
 
-  // ── Coding Agent path ──────────────────────────────────────────────────
-
+  // --- Coding Agent path ---
   it('coding agent: no general placeholders leak through', () => {
     const sp = buildSystemPrompt('balanced', 'Coding Agent', 0)
-    // Must NOT contain general-only placeholders
     expect(sp).not.toContain('{promptType}')
     expect(sp).not.toContain('{toneInstruction}')
   })
@@ -79,8 +77,20 @@ describe('getVariantLabels', () => {
     ])
   })
 
+  it('returns English labels when input asks for English', () => {
+    expect(getVariantLabels('General', 'please reply in English')).toEqual([
+      'Option 1 - Direct',
+      'Option 2 - Structured',
+      'Option 3 - Concise',
+    ])
+  })
+
   it('builds Chinese system prompt when input asks in English for Mandarin output', () => {
     expect(buildSystemPrompt('balanced', 'Email', 0, 'reply me mandarin')).toContain('将草稿改写为')
+  })
+
+  it('builds English system prompt when input asks for English', () => {
+    expect(buildSystemPrompt('balanced', 'Email', 0, 'please reply in English')).toContain('Keep the draft')
   })
 })
 

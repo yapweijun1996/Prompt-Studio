@@ -66,7 +66,7 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
               <input
                 value={store.model}
                 onChange={(e) => store.setModel(e.target.value)}
-                placeholder="e.g. gpt-4o"
+                placeholder="例如：gpt-4o"
                 className={fieldClass}
               />
             )}

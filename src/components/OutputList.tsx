@@ -16,7 +16,7 @@ export function OutputList() {
     const s = useStore.getState()
     if (!shareableOutputs.length) return
     try {
-      const url = buildShareUrl({
+      const url = await buildShareUrl({
         input: s.input,
         promptType: s.promptType,
         mode: s.mode,

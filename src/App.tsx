@@ -15,12 +15,17 @@ export default function App() {
   useEffect(() => {
     const match = location.hash.match(/^#c=(.+)$/)
     if (!match) return
-    const payload = decodeShare(match[1])
-    if (payload) {
+    let active = true
+    void (async () => {
+      const payload = await decodeShare(match[1])
+      if (!active || !payload) return
       useStore.getState().restoreConversation(payload)
       setSharedNotice(true)
-    }
+    })()
     history.replaceState(null, '', location.pathname + location.search)
+    return () => {
+      active = false
+    }
   }, [])
 
   return (
