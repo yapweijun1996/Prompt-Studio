@@ -1,12 +1,37 @@
 import type { OutputCard, GenerationMode, EffortLevel } from '../types'
 
-// What a shared link carries — a subset of one Convert run.
+const MODES = ['creative', 'balanced', 'strict'] as const
+const EFFORTS = ['low', 'medium', 'high', 'xhigh'] as const
+const OUTPUT_STATUSES = ['loading', 'done', 'error'] as const
+
+// What a shared link carries - a subset of one Convert run.
 export interface SharePayload {
   input: string
   promptType: string
   mode: GenerationMode
   effort: EffortLevel
   outputs: OutputCard[]
+}
+
+function isMode(v: unknown): v is GenerationMode {
+  return typeof v === 'string' && (MODES as readonly string[]).includes(v)
+}
+
+function isEffort(v: unknown): v is EffortLevel {
+  return typeof v === 'string' && (EFFORTS as readonly string[]).includes(v)
+}
+
+function isOutputStatus(v: unknown): v is OutputCard['status'] {
+  return typeof v === 'string' && (OUTPUT_STATUSES as readonly string[]).includes(v)
+}
+
+function isOutputCard(v: unknown): v is OutputCard {
+  if (!v || typeof v !== 'object') return false
+  const card = v as Record<string, unknown>
+  if (typeof card.id !== 'number' || typeof card.label !== 'string' || typeof card.text !== 'string') return false
+  if (!isOutputStatus(card.status)) return false
+  if (card.error != null && typeof card.error !== 'string') return false
+  return true
 }
 
 function utf8ToBase64Url(str: string): string {
@@ -29,9 +54,23 @@ export function encodeShare(p: SharePayload): string {
 
 export function decodeShare(encoded: string): SharePayload | null {
   try {
-    const p = JSON.parse(base64UrlToUtf8(encoded)) as SharePayload
-    if (typeof p.input === 'string' && Array.isArray(p.outputs)) return p
-    return null
+    const parsed: unknown = JSON.parse(base64UrlToUtf8(encoded))
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null
+
+    const raw = parsed as Record<string, unknown>
+    if (typeof raw.input !== 'string') return null
+    if (!isMode(raw.mode) || !isEffort(raw.effort)) return null
+    if (!raw.promptType || typeof raw.promptType !== 'string') return null
+    const outputs = raw.outputs
+    if (!Array.isArray(outputs) || !outputs.every(isOutputCard)) return null
+
+    return {
+      input: raw.input,
+      promptType: raw.promptType,
+      mode: raw.mode,
+      effort: raw.effort,
+      outputs: outputs as OutputCard[],
+    }
   } catch {
     return null
   }

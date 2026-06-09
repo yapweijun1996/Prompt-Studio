@@ -5,14 +5,19 @@ import type { OutputCard as OutputCardType } from '../types'
 export function OutputCard({ card }: { card: OutputCardType }) {
   const selectedIndex = useStore((s) => s.selectedIndex)
   const setSelectedIndex = useStore((s) => s.setSelectedIndex)
-  const [copied, setCopied] = useState(false)
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
 
   const isSelected = selectedIndex === card.id
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(card.text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
+    try {
+      await navigator.clipboard.writeText(card.text)
+      setCopyState('copied')
+      setTimeout(() => setCopyState('idle'), 1500)
+    } catch {
+      setCopyState('failed')
+      setTimeout(() => setCopyState('idle'), 1500)
+    }
   }
 
   return (
@@ -35,7 +40,7 @@ export function OutputCard({ card }: { card: OutputCardType }) {
       {card.status === 'loading' && (
         <div className="flex items-center gap-2 text-fg-faint text-sm py-4">
           <span className="inline-block w-4 h-4 rounded-full border-2 border-line-hi border-t-brand animate-spin" />
-          Generating…
+          Generating...
         </div>
       )}
 
@@ -53,7 +58,7 @@ export function OutputCard({ card }: { card: OutputCardType }) {
             onClick={handleCopy}
             className="flex-1 py-1.5 rounded-lg bg-surface-hi hover:bg-surface-hover text-xs text-fg-muted transition-colors"
           >
-            {copied ? 'Copied!' : 'Copy'}
+            {copyState === 'copied' ? 'Copied!' : copyState === 'failed' ? 'Copy failed' : 'Copy'}
           </button>
           <button
             onClick={() => setSelectedIndex(isSelected ? null : card.id)}

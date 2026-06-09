@@ -3,11 +3,44 @@ import { loadApiKey, saveApiKey } from '../lib/xor'
 import type { OutputCard, Provider, EffortLevel, GenerationMode, Theme, Conversation } from '../types'
 
 const THEME_KEY = 'ps_theme'
+const SETTINGS_KEY = 'ps_settings'
+
+const PROVIDERS = ['default', 'openai', 'gemini', 'custom'] as const
+const MODES = ['creative', 'balanced', 'strict'] as const
+const EFFORTS = ['low', 'medium', 'high', 'xhigh'] as const
+const DEFAULT_PROMPT_TYPES = ['General', 'Code', 'Coding Agent', 'Creative Writing', 'Analysis', 'Summary', 'Translation', 'Email', 'Marketing'] as const
+
+type PersistedSettings = {
+  provider?: Provider
+  model?: string
+  endpoint?: string
+  effort?: EffortLevel
+  mode?: GenerationMode
+  promptType?: string
+}
 
 function getInitialTheme(): Theme {
   const saved = localStorage.getItem(THEME_KEY)
   if (saved === 'light' || saved === 'dark') return saved
   return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+function isProvider(v: unknown): v is Provider {
+  return typeof v === 'string' && (PROVIDERS as readonly string[]).includes(v)
+}
+
+function isMode(v: unknown): v is GenerationMode {
+  return typeof v === 'string' && (MODES as readonly string[]).includes(v)
+}
+
+function isEffort(v: unknown): v is EffortLevel {
+  return typeof v === 'string' && (EFFORTS as readonly string[]).includes(v)
+}
+
+function sanitizePromptType(v: unknown): string {
+  if (typeof v !== 'string' || v.trim().length === 0) return 'General'
+  const allowed = DEFAULT_PROMPT_TYPES.includes(v as (typeof DEFAULT_PROMPT_TYPES)[number])
+  return allowed ? v : 'General'
 }
 
 function applyTheme(theme: Theme): void {
@@ -48,8 +81,6 @@ interface StoreState {
   restoreConversation: (c: Pick<Conversation, 'input' | 'promptType' | 'mode' | 'effort' | 'outputs'>) => void
 }
 
-const SETTINGS_KEY = 'ps_settings'
-
 // Each provider needs a model id from its own namespace. Switching provider
 // must reset the model, or e.g. Gemini would be called with "gpt-5.4-mini".
 const DEFAULT_MODELS: Record<Provider, string> = {
@@ -69,10 +100,22 @@ function initialModel(provider: Provider, savedModel?: string): string {
   return savedModel
 }
 
-function loadSettings(): Partial<StoreState> {
+function loadSettings(): PersistedSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY)
-    return raw ? (JSON.parse(raw) as Partial<StoreState>) : {}
+    if (!raw) return {}
+    const parsed: unknown = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
+
+    const src = parsed as Record<string, unknown>
+    return {
+      provider: isProvider(src.provider) ? src.provider : undefined,
+      model: typeof src.model === 'string' ? src.model : undefined,
+      endpoint: typeof src.endpoint === 'string' ? src.endpoint : undefined,
+      effort: isEffort(src.effort) ? src.effort : undefined,
+      mode: isMode(src.mode) ? src.mode : undefined,
+      promptType: sanitizePromptType(src.promptType),
+    }
   } catch {
     return {}
   }
@@ -135,9 +178,9 @@ export const useStore = create<StoreState>((set, get) => ({
   restoreConversation: (c) => {
     set({
       input: c.input,
-      promptType: c.promptType,
-      mode: c.mode,
-      effort: c.effort,
+      promptType: sanitizePromptType(c.promptType),
+      mode: isMode(c.mode) ? c.mode : 'balanced',
+      effort: isEffort(c.effort) ? c.effort : 'medium',
       outputs: c.outputs,
       selectedIndex: null,
     })

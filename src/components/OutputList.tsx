@@ -5,24 +5,31 @@ import { buildShareUrl } from '../lib/share'
 
 export function OutputList() {
   const outputs = useStore((s) => s.outputs)
-  const [copied, setCopied] = useState(false)
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
 
   if (outputs.length === 0) return null
 
-  const hasResult = outputs.some((c) => c.status === 'done')
+  const shareableOutputs = outputs.filter((c) => c.status === 'done')
+  const hasResult = shareableOutputs.length > 0
 
   async function handleShare() {
     const s = useStore.getState()
-    const url = buildShareUrl({
-      input: s.input,
-      promptType: s.promptType,
-      mode: s.mode,
-      effort: s.effort,
-      outputs: s.outputs,
-    })
-    await navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1800)
+    if (!shareableOutputs.length) return
+    try {
+      const url = buildShareUrl({
+        input: s.input,
+        promptType: s.promptType,
+        mode: s.mode,
+        effort: s.effort,
+        outputs: shareableOutputs,
+      })
+      await navigator.clipboard.writeText(url)
+      setCopyState('copied')
+      setTimeout(() => setCopyState('idle'), 1800)
+    } catch {
+      setCopyState('failed')
+      setTimeout(() => setCopyState('idle'), 1800)
+    }
   }
 
   return (
@@ -30,13 +37,13 @@ export function OutputList() {
       {hasResult && (
         <div className="flex items-center justify-between gap-3">
           <p className="text-[11px] text-fg-faint">
-            The share link embeds your prompt and outputs — anyone with it can read them.
+            The share link embeds your prompt and outputs; anyone with it can read them.
           </p>
           <button
             onClick={handleShare}
             className="shrink-0 text-xs px-3 py-1.5 rounded-lg bg-surface-hi hover:bg-surface-hover text-fg-muted transition-colors"
           >
-            {copied ? 'Link copied!' : 'Copy share link'}
+            {copyState === 'copied' ? 'Link copied!' : copyState === 'failed' ? 'Copy failed' : 'Copy share link'}
           </button>
         </div>
       )}
